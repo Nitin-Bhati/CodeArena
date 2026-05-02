@@ -51,6 +51,9 @@ const login = async (req,res)=>{
 
         const user = await User.findOne({emailId});
 
+        if(!user)
+            throw new Error("Invalid Credentials");
+
         const match = await bcrypt.compare(password,user.password);
 
         if(!match)
@@ -84,9 +87,12 @@ const logout = async(req,res)=>{
         const {token} = req.cookies;
         const payload = jwt.decode(token);
 
-
-        await redisClient.set(`token:${token}`,'Blocked');
-        await redisClient.expireAt(`token:${token}`,payload.exp);
+        try {
+            await redisClient.set(`token:${token}`,'Blocked');
+            await redisClient.expireAt(`token:${token}`,payload.exp);
+        } catch (redisErr) {
+            console.warn("Failed to block token in Redis during logout.");
+        }
     //    Token add kar dung Redis ke blockList
     //    Cookies ko clear kar dena.....
 

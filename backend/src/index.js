@@ -13,8 +13,14 @@ const cors = require('cors')
 
 // console.log("Hello")
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: allowedOrigins,
     credentials: true 
 }))
 
@@ -30,18 +36,23 @@ app.use("/video",videoRouter);
 
 const InitalizeConnection = async ()=>{
     try{
-
-        await Promise.all([main(),redisClient.connect()]);
+        await main();
         console.log("DB Connected");
-        
-        app.listen(process.env.PORT, ()=>{
-            console.log("Server listening at port number: "+ process.env.PORT);
-        })
+    } catch(err) {
+        console.error("DB Connection Error: " + err);
+        process.exit(1);
+    }
 
+    try {
+        await redisClient.connect();
+        console.log("Redis Connected");
+    } catch(err) {
+        console.error("Redis Connection Error (Redis features will be disabled): " + err);
     }
-    catch(err){
-        console.log("Error: "+err);
-    }
+
+    app.listen(process.env.PORT, ()=>{
+        console.log("Server listening at port number: "+ process.env.PORT);
+    })
 }
 
 

@@ -5,10 +5,10 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-    const response =  await axiosClient.post('/user/register', userData);
-    return response.data.user;
+      const response = await axiosClient.post('/user/register', userData);
+      return response.data.user;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -21,7 +21,7 @@ export const loginUser = createAsyncThunk(
       const response = await axiosClient.post('/user/login', credentials);
       return response.data.user;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -36,7 +36,7 @@ export const checkAuth = createAsyncThunk(
       if (error.response?.status === 401) {
         return rejectWithValue(null); // Special case for no session
       }
-      return rejectWithValue(error);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -48,7 +48,7 @@ export const logoutUser = createAsyncThunk(
       await axiosClient.post('/user/logout');
       return null;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -77,7 +77,16 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        const payload = action.payload;
+        if (typeof payload === 'string') {
+          state.error = payload;
+        } else if (payload?.message) {
+          state.error = payload.message;
+        } else if (payload?.error) {
+          state.error = payload.error;
+        } else {
+          state.error = 'Something went wrong';
+        }
         state.isAuthenticated = false;
         state.user = null;
       })
@@ -94,7 +103,16 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        const payload = action.payload;
+        if (typeof payload === 'string') {
+          state.error = payload;
+        } else if (payload?.message) {
+          state.error = payload.message;
+        } else if (payload?.error) {
+          state.error = payload.error;
+        } else {
+          state.error = 'Something went wrong';
+        }
         state.isAuthenticated = false;
         state.user = null;
       })
@@ -111,7 +129,16 @@ const authSlice = createSlice({
       })
       .addCase(checkAuth.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        const payload = action.payload;
+        if (typeof payload === 'string') {
+          state.error = payload;
+        } else if (payload?.message) {
+          state.error = payload.message;
+        } else if (payload?.error) {
+          state.error = payload.error;
+        } else {
+          state.error = null; // Don't show "Something went wrong" on background check
+        }
         state.isAuthenticated = false;
         state.user = null;
       })
@@ -129,7 +156,16 @@ const authSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        const payload = action.payload;
+        if (typeof payload === 'string') {
+          state.error = payload;
+        } else if (payload?.message) {
+          state.error = payload.message;
+        } else if (payload?.error) {
+          state.error = payload.error;
+        } else {
+          state.error = 'Something went wrong';
+        }
         state.isAuthenticated = false;
         state.user = null;
       });

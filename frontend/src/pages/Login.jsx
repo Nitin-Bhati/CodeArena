@@ -39,6 +39,11 @@ function Login() {
         <div className="card-body">
           <h2 className="card-title justify-center text-3xl mb-6">Leetcode</h2> {/* Added mb-6 */}
 
+          {error && (
+            <div className="alert alert-error mb-4">
+              <span className="text-sm">{error}</span>
+            </div>
+          )}
           
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-control"> {/* Removed mt-4 from first form-control for tighter spacing to title or global error */}
