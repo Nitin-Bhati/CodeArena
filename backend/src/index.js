@@ -16,11 +16,20 @@ const cors = require('cors')
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
     process.env.FRONTEND_URL
 ].filter(Boolean);
 
 app.use(cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true 
 }))
 
@@ -36,10 +45,13 @@ app.use("/video",videoRouter);
 
 const InitalizeConnection = async ()=>{
     try{
+        if (!process.env.DB_CONNECT_STRING) {
+            throw new Error("DB_CONNECT_STRING is not defined in .env file");
+        }
         await main();
-        console.log("DB Connected");
+        console.log("DB Connected Successfully");
     } catch(err) {
-        console.error("DB Connection Error: " + err);
+        console.error("Critical Database Error: " + err.message);
         process.exit(1);
     }
 

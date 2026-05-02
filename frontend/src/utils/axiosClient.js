@@ -8,6 +8,19 @@ const axiosClient =  axios.create({
     }
 });
 
+// Add a response interceptor for easier debugging
+axiosClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (!error.response) {
+            console.error('Network Error: Please check if your backend server is running and accessible.');
+        } else {
+            console.error(`API Error (${error.response.status}):`, error.response.data);
+        }
+        return Promise.reject(error);
+    }
+);
+
 
 export default axiosClient;
 
