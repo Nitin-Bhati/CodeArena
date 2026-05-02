@@ -50,9 +50,10 @@ const InitalizeConnection = async ()=>{
         console.error("Redis Connection Error (Redis features will be disabled): " + err);
     }
 
-    app.listen(process.env.PORT, ()=>{
-        console.log("Server listening at port number: "+ process.env.PORT);
-    })
+   const PORT = process.env.PORT || 3000;
+app.listen(PORT, ()=>{
+    console.log("Server listening at port number: " + PORT);
+})
 }
 
 
