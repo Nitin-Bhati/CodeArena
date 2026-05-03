@@ -143,6 +143,15 @@ function Homepage() {
           ))}
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="footer footer-center p-10 bg-base-100 text-base-content border-t border-base-300 mt-10">
+        <aside>
+          <p className="font-bold text-lg">CodeArena</p> 
+          <p>Copyright © {new Date().getFullYear()} - All right reserved</p>
+          <p className="text-primary font-medium italic mt-2">Developed by Nitin Gurjar</p>
+        </aside>
+      </footer>
     </div>
   );
 }
