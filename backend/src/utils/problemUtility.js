@@ -72,26 +72,33 @@ const options = {
 };
 
 async function fetchData() {
-	try {
-		const response = await axios.request(options);
-		return response.data;
-	} catch (error) {
-		console.error(error);
-	}
+    try {
+        const response = await axios.request(options);
+        return response.data;
+    } catch (error) {
+        console.error("Judge0 API Error:", error.response?.data || error.message);
+        throw error; // Throw so caller can catch it
+    }
 }
 
+while (true) {
+    try {
+        const result = await fetchData();
+        if (!result || !result.submissions) {
+            throw new Error("Invalid response from Judge0");
+        }
 
- while(true){
+        const IsResultObtained = result.submissions.every((r) => r.status_id > 2);
 
- const result =  await fetchData();
+        if (IsResultObtained)
+            return result.submissions;
 
-  const IsResultObtained =  result.submissions.every((r)=>r.status_id>2);
-
-  if(IsResultObtained)
-    return result.submissions;
-
-  
-  await waiting(1000);
+        await waiting(1000);
+    } catch (err) {
+        console.error("Polling Error:", err.message);
+        // If it's a transient error, wait and retry. If persistent, this will eventually timeout the request.
+        await waiting(2000);
+    }
 }
 
 

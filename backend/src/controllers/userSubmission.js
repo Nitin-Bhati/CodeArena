@@ -66,17 +66,11 @@ const submitCode = async (req,res)=>{
     for(const test of testResult){
         if(test.status_id==3){
            testCasesPassed++;
-           runtime = runtime+parseFloat(test.time)
-           memory = Math.max(memory,test.memory);
+           runtime = runtime + (parseFloat(test.time) || 0);
+           memory = Math.max(memory, (test.memory || 0));
         }else{
-          if(test.status_id==4){
-            status = 'error'
-            errorMessage = test.stderr
-          }
-          else{
-            status = 'wrong'
-            errorMessage = test.stderr
-          }
+          status = test.status_id == 4 ? 'error' : 'wrong';
+          errorMessage = test.stderr || test.compile_output || test.message || "Execution Error";
         }
     }
 
@@ -160,17 +154,11 @@ const runCode = async(req,res)=>{
     for(const test of testResult){
         if(test.status_id==3){
            testCasesPassed++;
-           runtime = runtime+parseFloat(test.time)
-           memory = Math.max(memory,test.memory);
+           runtime = runtime + (parseFloat(test.time) || 0);
+           memory = Math.max(memory, (test.memory || 0));
         }else{
-          if(test.status_id==4){
-            status = false
-            errorMessage = test.stderr
-          }
-          else{
-            status = false
-            errorMessage = test.stderr
-          }
+          status = false;
+          errorMessage = test.stderr || test.compile_output || test.message || "Execution Error";
         }
     }
 
