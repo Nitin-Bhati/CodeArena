@@ -81,7 +81,8 @@ const ProblemPage = () => {
       console.error('Error running code:', error);
       setRunResult({
         success: false,
-        error: 'Internal server error'
+        error: error.response?.data || 'Failed to connect to the execution server',
+        testCases: []
       });
       setLoading(false);
       setActiveRightTab('testcase');
@@ -104,7 +105,12 @@ const ProblemPage = () => {
       
     } catch (error) {
       console.error('Error submitting code:', error);
-      setSubmitResult(null);
+      setSubmitResult({
+        accepted: false,
+        error: error.response?.data || 'Submission failed. Please try again.',
+        passedTestCases: 0,
+        totalTestCases: 0
+      });
       setLoading(false);
       setActiveRightTab('result');
     }
@@ -384,7 +390,7 @@ const ProblemPage = () => {
                         <p className="text-sm">Memory: {runResult.memory+" KB"}</p>
                         
                         <div className="mt-4 space-y-2">
-                          {runResult.testCases.map((tc, i) => (
+                          {runResult.testCases?.map((tc, i) => (
                             <div key={i} className="bg-base-100 p-3 rounded text-xs">
                               <div className="font-mono">
                                 <div><strong>Input:</strong> {tc.stdin}</div>
@@ -402,19 +408,19 @@ const ProblemPage = () => {
                       <div>
                         <h4 className="font-bold">❌☠️ Error</h4>
                         <div className="mt-4 space-y-2">
-                          {runResult.testCases.map((tc, i) => (
+                          {runResult.testCases?.map((tc, i) => (
                             <div key={i} className="bg-base-100 p-3 rounded text-xs">
-                              <div className="font-mono">
-                                <div><strong>Input:</strong> {tc.stdin}</div>
-                                <div><strong>Expected:</strong> {tc.expected_output}</div>
-                                <div><strong>Output:</strong> {tc.stdout}</div>
-                                <div className={tc.status_id==3 ? 'text-green-600' : 'text-red-600'}>
-                                  {tc.status_id==3 ? '✓ Passed' : '✗ Failed'}
+                                <div className="font-mono">
+                                  <div><strong>Input:</strong> {tc.stdin}</div>
+                                  <div><strong>Expected:</strong> {tc.expected_output}</div>
+                                  <div><strong>Output:</strong> {tc.stdout}</div>
+                                  <div className={tc.status_id==3 ? 'text-green-600' : 'text-red-600'}>
+                                    {tc.status_id==3 ? '✓ Passed' : (tc.status?.description || '✗ Failed')}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
+                            ))}
+                          </div>
                       </div>
                     )}
                   </div>
