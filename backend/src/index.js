@@ -42,6 +42,13 @@ app.use('/submission',submitRouter);
 app.use('/ai',aiRouter);
 app.use("/video",videoRouter);
 
+app.get("/", (req, res) => {
+    res.status(200).json({
+        status: "OK",
+        message: "CodeArena Backend is running 🚀"
+    });
+});
+
 
 const InitalizeConnection = async ()=>{
     try{
