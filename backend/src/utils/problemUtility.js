@@ -14,36 +14,30 @@ const getLanguageById = (lang)=>{
 }
 
 
-const submitBatch = async (submissions)=>{
+const submitBatch = async (submissions) => {
+    const options = {
+        method: 'POST',
+        url: 'https://judge0-ce.p.rapidapi.com/submissions/batch',
+        params: {
+            base64_encoded: 'false'
+        },
+        headers: {
+            'x-rapidapi-key': process.env.JUDGE0_KEY,
+            'x-rapidapi-host': 'judge0-ce.p.rapidapi.com',
+            'Content-Type': 'application/json'
+        },
+        data: {
+            submissions
+        }
+    };
 
-
-const options = {
-  method: 'POST',
-  url: 'https://judge0-ce.p.rapidapi.com/submissions/batch',
-  params: {
-    base64_encoded: 'false'
-  },
-  headers: {
-    'x-rapidapi-key': process.env.JUDGE0_KEY,
-    'x-rapidapi-host': 'judge0-ce.p.rapidapi.com',
-    'Content-Type': 'application/json'
-  },
-  data: {
-    submissions
-  }
-};
-
-async function fetchData() {
-	try {
-		const response = await axios.request(options);
-		return response.data;
-	} catch (error) {
-		console.error(error);
-	}
-}
-
- return await fetchData();
-
+    try {
+        const response = await axios.request(options);
+        return response.data;
+    } catch (error) {
+        console.error("Judge0 Batch Submission Error:", error.response?.data || error.message);
+        throw error;
+    }
 }
 
 

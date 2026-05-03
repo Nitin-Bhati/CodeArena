@@ -49,6 +49,9 @@ const submitCode = async (req,res)=>{
 
     
     const submitResult = await submitBatch(submissions);
+    if (!submitResult || !Array.isArray(submitResult)) {
+        throw new Error("Failed to get tokens from Judge0");
+    }
     
     const resultToken = submitResult.map((value)=> value.token);
 
@@ -140,6 +143,9 @@ const runCode = async(req,res)=>{
 
 
    const submitResult = await submitBatch(submissions);
+   if (!submitResult || !Array.isArray(submitResult)) {
+       throw new Error("Failed to get tokens from Judge0");
+   }
    
    const resultToken = submitResult.map((value)=> value.token);
 
