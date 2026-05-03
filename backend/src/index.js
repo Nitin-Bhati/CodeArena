@@ -14,23 +14,7 @@ const cors = require('cors')
 // console.log("Hello")
 
 app.use(cors({
-    origin: (origin, callback) => {
-        const currentAllowedOrigins = [
-            'http://localhost:5173',
-            'http://localhost:5174',
-            'http://127.0.0.1:5173',
-            'http://127.0.0.1:5174',
-            process.env.FRONTEND_URL
-        ].filter(Boolean);
-
-        // Allow requests with no origin (like mobile apps or curl)
-        if (!origin || currentAllowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            console.error(`CORS Blocked: ${origin} not in`, currentAllowedOrigins);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: true,
     credentials: true 
 }))
 
